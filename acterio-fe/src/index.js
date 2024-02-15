@@ -1,13 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import reportWebVitals from "./reportWebVitals";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Posts from "./components/Posts";
+import { loader as topicLoader } from "./components/Posts";
+import Error from "./pages/Error";
+import PostDetail, { loader as topicLoaderId } from "./components/PostDetail";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Posts />,
+    errorElement: <Error />,
+    loader: topicLoader,
+  },
+  {
+    path: "/posts/:id",
+    element: <PostDetail />,
+    errorElement: <Error />,
+    loader: (params) => topicLoaderId(params),
+  },
+]);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 
