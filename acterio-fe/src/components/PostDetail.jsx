@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Paper, Typography, Button } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import { useLoaderData } from "react-router-dom";
 import { getPost, updateReactions } from "../services/dataService";
+import Header from "./Header";
+import reactimg from "../images/react.png";
+import unreactimg from "../images/reacted.png";
 
 export async function loader({ params }) {
   const Post = await getPost(params.id);
@@ -37,25 +40,78 @@ export default function Projects() {
 
       setReactions(updatedPost.reactions);
       setHasReacted(true);
+    } else {
+      // User has already reacted, unreact by decrementing the reactions count
+      const updatedPost = await updateReactions(Post.id, reactions - 1);
+
+      // Save the updated reactions count and set hasReacted to false in localStorage
+      localStorage.setItem(
+        `reactions_${Post.id}`,
+        updatedPost.reactions.toString()
+      );
+      localStorage.setItem(`hasReacted_${Post.id}`, "false");
+
+      setReactions(updatedPost.reactions);
+      setHasReacted(false);
     }
   };
 
   return (
-    <div>
-      <h1>id</h1>
-      <Paper elevation={3} style={{ padding: "20px", height: "100%" }}>
-        <Typography variant="h6">{Post.title}</Typography>
-        <Typography variant="body2">{Post.body}</Typography>
-        <Typography variant="body2">{reactions} Reactions</Typography>
-        <Button
-          variant="contained"
-          color="primary"
+    <div className="post-flex">
+      <div
+        className="post-containter"
+        elevation={3}
+        style={{ borderRadius: "30px" }}
+      >
+        <h3 variant="h6">{Post.title}</h3>
+        <p variant="body2">{Post.body}</p>
+        {/* Display Tags */}
+        <div style={{ marginTop: "10px" }}>
+          {Post.tags.map((tag, index) => (
+            <span
+              key={index}
+              style={{
+                marginRight: "5px",
+                padding: "5px",
+                backgroundColor: "none",
+                border: "1px solid white",
+                borderRadius: "20px",
+                color: "white",
+              }}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        <button
+          style={{
+            cursor: "pointer",
+            border: "none",
+            background: "none",
+            marginTop: "20px",
+          }}
           onClick={handleReactClick}
-          disabled={hasReacted}
         >
-          React
-        </Button>
-      </Paper>
+          {hasReacted ? (
+            <img
+              src={unreactimg}
+              alt="Unreact"
+              style={{
+                width: "20px",
+                height: "20px",
+              }}
+            />
+          ) : (
+            <img
+              src={reactimg}
+              alt="React"
+              style={{ width: "20px", height: "20px" }}
+            />
+          )}
+          <Typography variant="body2">{reactions} </Typography>
+        </button>
+      </div>
     </div>
   );
 }
