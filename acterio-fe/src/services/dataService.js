@@ -1,7 +1,7 @@
 export async function getPosts() {
   try {
-    const storedPosts = localStorage.getItem('posts');
-    
+    const storedPosts = localStorage.getItem("posts");
+
     if (storedPosts) {
       const posts = JSON.parse(storedPosts);
       console.log("Fetched posts from localStorage:", posts);
@@ -17,7 +17,7 @@ export async function getPosts() {
       console.log("Fetched posts from API:", posts);
 
       // Save the fetched posts to localStorage for future use
-      localStorage.setItem('posts', JSON.stringify(posts));
+      localStorage.setItem("posts", JSON.stringify(posts));
 
       return Promise.resolve(posts);
     }
@@ -26,8 +26,6 @@ export async function getPosts() {
     return Promise.reject(error);
   }
 }
-
-
 
 export async function getPost(id) {
   try {
@@ -79,8 +77,38 @@ export async function deletePost(postId) {
 }
 
 export const updateReactions = async (postId, newReactionsCount) => {
-  // Simulate the update on the client side
-  const updatedPost = { id: postId, reactions: newReactionsCount };
+  try {
+    // Simulate an asynchronous update by using setTimeout
+    const delay = 1000; // 1 second delay (adjust as needed)
+    await new Promise((resolve) => setTimeout(resolve, delay));
 
-  return updatedPost;
+    // Assuming you have a server endpoint for updating reactions
+    const response = await fetch(`https://dummyjson.com/posts/${postId}`, {
+      method: "PATCH", // Use the appropriate HTTP method for updating reactions
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ reactions: newReactionsCount }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update reactions");
+    }
+
+    // Fetch the updated post from the server (optional)
+    const updatedPostResponse = await fetch(
+      `https://dummyjson.com/posts/${postId}`
+    );
+    if (!updatedPostResponse.ok) {
+      throw new Error("Failed to fetch updated post");
+    }
+    const updatedPost = await updatedPostResponse.json();
+
+    console.log("Updated post after reactions update:", updatedPost);
+
+    return updatedPost;
+  } catch (error) {
+    console.error("Error updating reactions:", error.message);
+    throw error;
+  }
 };
