@@ -6,17 +6,19 @@ import Posts from "./components/Posts";
 import { loader as topicLoader } from "./components/Posts";
 import Error from "./pages/Error";
 import PostDetail, { loader as topicLoaderId } from "./components/PostDetail";
+import App from "./App";
+import Post from "./pages/Post";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Posts />,
+    path: "/posts",
+    element: <App />,
     errorElement: <Error />,
     loader: topicLoader,
   },
   {
     path: "/posts/:id",
-    element: <PostDetail />,
+    element: <Post />,
     errorElement: <Error />,
     loader: (params) => topicLoaderId(params),
   },
